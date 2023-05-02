@@ -1,11 +1,13 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose"
 
-const profileSchema = new mongoose.Schema({
-    imgURL: {
-        type: String, 
-        required: false
+const Schema = mongoose.Schema
+
+const profileSchema = new Schema ({
+  imgURL: {
+    type: String, 
+    required: false
     },
-    name: {
+  name: {
     type: String, 
     required: true
   },
@@ -13,9 +15,8 @@ const profileSchema = new mongoose.Schema({
     type: String, 
     required: true
   }
-  
-});
+})
 
 const Profile = mongoose.model('Profile', profileSchema)
 
-module.exports = Profile;
+export { Profile }

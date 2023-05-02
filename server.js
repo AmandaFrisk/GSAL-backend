@@ -1,44 +1,30 @@
-/* == External Modules == */
-const express = require('express')
-const cors = require('cors')
-// whitelist & corsOptions
-const whitelist = ['http://localhost:3000',`${process.env.FRONTEND_URL}`];
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (whitelist.indexOf(origin) !== -1 || (!origin)) {
-//       callback(null, true)
-//     } else {
-//       callback(new Error('Not allowed by CORS'))
-//     }
-//   }
-// }
 
-require('dotenv').config()
-/* == Internal Modules == */
-const routes = require('./routes');
+import 'dotenv.config.js'
+import express from 'express'
+import cors from 'cors'
+import logger from 'morgan'
+import formData from 'express-form-data'
 
-/* == Express Instance == */
+import { router as profilesRouter } from './routes/profiles.js'
+
+import './confirg/database.js'
+
 const app = express()
 
-/* == Port == */
-const PORT = process.env.PORT || 3003;
+app.use(cors()) 
+app.use(logger('dev'))
+app.use(express.json())
+app.use(formData.parse())
 
-/* == DB connection == */
-require('./config/db.connection');
+app.use('/api/profiles', profilesRouter)
 
-/* == Middleware == */
-// app.use(cors(corsOptions)) 
-app.use(cors("*")) 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-/* == Routes == */
-app.get('/', function (req, res) {
-	res.send('hello');
-});
-app.use("/profiles",routes.profiles)
-
-/* == Listen == */
-app.listen(PORT, () => {
-  console.log('🎉🎊', 'Party on PORT', PORT, '🎉🎊',)
+app.use(function (req, res, next) {
+  res.status(404).json({ err: 'Not found' })
 })
+
+app.use(function (err, req, res, next) {
+  res.status(err.status || 500).json({ err:err.message })
+})
+
+export { app }
